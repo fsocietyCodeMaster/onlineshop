@@ -1,0 +1,48 @@
+﻿@model IEnumerable<onlineshop.Models.T_L_Category>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<div class="table-responsive">
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Status
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsActive)
+                </td>
+                <td class="text-nowrap">
+                    <a asp-action="Update" asp-route-id="@item.ID_Category" class="btn btn-warning">Update</a>
+                    @* <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a> *@
+                    <form asp-action="Delete" method="post" style="display:inline">
+                        <input type="hidden" value="@item.ID_Category" name="id" />
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+</div>

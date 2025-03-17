@@ -1,0 +1,47 @@
+﻿@using onlineshop.Helper
+@model T_Product;
+
+<div class="container py-5">
+    <h2 class="text-center mb-5">@Model.Name</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                @foreach (var photo in Model.Photos)
+                {
+                    <img src="/@photo.ImageUrl" class="card-img-top" alt="A sleek modern laptop with a high-resolution screen">
+
+                }
+                <div class="card-body">
+                    <h5 class="card-title">@Model.Name</h5>
+                    <p class="card-text">@Model.Description</p>
+                    <p class="card-text">@Model.Quantity</p>
+                    @if (Model.IsDiscountActive && Model.Discount.HasValue)
+                    {
+                        <p class="card-text"><small class="text-body-secondary" style="text-decoration:line-through">Price: @Model.Price.ToString("N0")</small></p>
+
+                        <p class="card-text"><small class="text-body-secondary">Price with discount: @DiscountExtention.GetDiscount(Model).ToString("N0")</small></p>
+                    }
+                    else
+                    {
+                        <p class="card-text"><small class="text-body-secondary">Price: @Model.Price.ToString("N0")</small></p>
+
+                    }
+                    <form method="post" asp-action="AddToBasket" asp-controller="OnlineShop" onsubmit="disableButton(this)">
+                        <input type="hidden" name="id" value="@Model.ID_Product" />
+                        <div class="form-group">
+                            @Html.TextBox("quantity", 1, new { @type = "number", @min = "1", @id = "quantity" })
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-info mt-2" id="addToBasketButton">Add to Basket</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function disableButton(form) {
+        const button = form.querySelector('#addToBasketButton');
+        button.disabled = true;
+        button.innerText = 'Adding...'; // Optional: Change button text to indicate action
+    }
+</script>

@@ -1,0 +1,74 @@
+﻿@using onlineshop.Helper
+@using shoppingApp.Extention
+@model OrderViewModel
+@{
+    ViewData["Title"] = "Showorder";
+}
+
+<h2>Order Details</h2>
+
+<div>
+    <h3>Customer Information</h3>
+    <p><strong>Name:</strong> @Model.Name</p>
+    <p><strong>Address:</strong> @Model.Address</p>
+    <p><strong>City:</strong> @Model.City</p>
+    <p><strong>Status:</strong> @Model.OrderStatus.GetDisplayName()</p>
+
+</div>
+
+<div>
+    <h3>Order Items</h3>
+    @if (Model.BasketDetails != null && Model.BasketDetails.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Product Photo</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var detail in Model.BasketDetails)
+                {
+                    <tr>
+                        <td>@detail.Product.Name</td>
+                        @foreach (var photo in detail.Product.Photos)
+                        {
+                            <td>
+                                <img src="/@photo.ImageUrl" class="border-radius" style="max-width : 150px" />
+                            </td>
+                        }
+                        <td>
+                            @if (detail.Product.IsDiscountActive && detail.Product.Discount.HasValue)
+                            {
+                                @DiscountExtention.GetDiscount(detail.Product).ToString("N0")
+                                ;
+                            }
+                            else
+                            {
+                                @detail.Product.Price.ToString("N0")
+                            }
+
+                        </td>
+                        <td>@detail.Quantity</td>
+                    </tr>
+                }
+                <tr>
+                    <th>TotalPrice</th>
+                    <td>@ViewBag.price.ToString("N0")</td>
+
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No items found for this order.</p>
+    }
+</div>
+
+<form method="post" asp-action="Payment" asp-controller="OnlineShop" onsubmit="disableButton(this)">
+
+    <button type="submit" class="btn btn-primary" >Do the Payment now!</button>
+</form>

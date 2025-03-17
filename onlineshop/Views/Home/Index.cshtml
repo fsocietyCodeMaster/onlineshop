@@ -1,0 +1,68 @@
+﻿@using onlineshop.Helper
+@using X.PagedList.Mvc.Core
+
+@model X.PagedList.IPagedList<onlineshop.Models.T_Product>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@* <div class="text-center"> *@
+@*     <h1 class="display-4">Welcome</h1> *@
+@*     <p class="text-info">building Shopping app.</p> *@
+@* </div> *@
+
+@if(Model != null && Model.Any()){
+<!-- Hero Section -->
+<div class="jumbotron bg-white text-center">
+    <div class="container">
+        <h1 class="display-4">Welcome to Digital Shop</h1>
+        <p class="lead">Find the best laptops and phones here</p>
+        <p>We offer a wide range of digital products to suit all your needs. Browse our collection and find the perfect device for you.</p>
+    </div>
+</div>
+
+<!-- Products Section -->
+<div class="container py-5">
+    <h2 class="text-center mb-5">Featured Products</h2>
+    <div class="row">
+        <!-- Product 1 -->
+           @foreach (var product in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    @foreach (var photo in product.Photos)
+                    {
+                        <img src="/@photo.ImageUrl" class="card-img-top" alt="A sleek modern laptop with a high-resolution screen">
+
+                    }
+                        <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">In Stock: @product.Quantity</p>
+                        <form asp-action="ProductDetail" asp-controller="OnlineShop" method="post" style="display:inline">
+                            <input type="hidden" value="@product.ID_Product" name="productId" />
+                            <button type="submit" class="btn btn-success">View Details</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+       
+    </div>
+</div>
+}else{
+    <p>There is no product.</p>
+}
+
+
+<!-- Pagination Controls -->
+<div class="d-flex justify-content-center">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+{
+    Display = PagedListDisplayMode.IfNeeded,
+    MaximumPageNumbersToDisplay = 5,
+    UlElementClasses = new[] { "pagination", "justify-content-center" },
+    LiElementClasses = new[] { "page-item" },
+    PageClasses = new[] { "page-link" }
+})
+</div>
