@@ -1,0 +1,47 @@
+﻿@model List<T_Order>;
+@{
+}
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Image</th>
+            <th>Oder Time</th>
+            <th>Finalized</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var orders in Model)
+        {
+
+            foreach (var products in orders.Baskets)
+            {
+                <tr>
+                    <td>@products.Product.Name</td>
+                    @foreach (var photo in products.Product.Photos)
+                    {
+                        <td>
+                            <img src="/@photo.ImageUrl" class="border-radius" style="max-width : 150px" />
+                        </td>
+                    }
+                    <td>
+                        @orders.OrderDate
+                    </td>
+                    <td>
+                        @if (orders.IsFinal == false)
+                        {
+                            <i class="bi bi-x-circle"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-check-circle"></i>
+
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

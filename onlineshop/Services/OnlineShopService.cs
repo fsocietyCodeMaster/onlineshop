@@ -92,13 +92,13 @@ namespace onlineshop.Services
 
         public async Task<ResponseVM> GetAllProducts(int page, int pageSize)
         {
-            var products = await _context.T_Product.Include(c => c.Photos).Where(c=> c.IsAvailable == true && c.Category.IsActive == true).ToListAsync();
+            var products = await _context.T_Product.Include(c => c.Photos).Where(c => c.IsAvailable == true && c.Category.IsActive == true).ToListAsync();
             if (products != null && products.Any())
             {
                 var success = new ResponseVM
                 {
                     IsSuccess = true,
-                    Data = products.ToPagedList(page,pageSize)
+                    Data = products.ToPagedList(page, pageSize)
                 };
                 return success;
             }
@@ -347,7 +347,7 @@ namespace onlineshop.Services
 
         public async Task<ResponseVM> GetOrder(string orderId)
         {
-            var order = await _context.T_Order.Include(c=> c.Baskets).ThenInclude(c=> c.Product).FirstOrDefaultAsync(c => c.ID_Order.ToString() == orderId && c.IsFinal == false);
+            var order = await _context.T_Order.Include(c => c.Baskets).ThenInclude(c => c.Product).FirstOrDefaultAsync(c => c.ID_Order.ToString() == orderId && c.IsFinal == false);
             if (order != null)
             {
                 var success = new ResponseVM
@@ -375,12 +375,35 @@ namespace onlineshop.Services
 
         public async Task saveChangesAsync()
         {
-            await _context.SaveChangesAsync();   
+            await _context.SaveChangesAsync();
         }
 
-        public  void AddPayment(T_Payment payment)
+        public void AddPayment(T_Payment payment)
         {
             _context.Add(payment);
+        }
+
+        public async Task<ResponseVM> GetAllOrderByUserId(string userId)
+        {
+            var orders = await _context.T_Order.Include(c => c.Baskets).ThenInclude(c => c.Product).ThenInclude(c => c.Photos).Where(c => c.T_User_ID == userId).ToListAsync();
+            if (orders.Any())
+            {
+                var success = new ResponseVM
+                {
+                    IsSuccess = true,
+                    Data = orders
+                };
+                return success;
+            }
+            else
+            {
+                var error = new ResponseVM
+                {
+                    IsSuccess = false,
+                    Message = "There is no order."
+                };
+                return error;
+            }
         }
     }
 }

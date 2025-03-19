@@ -20,6 +20,7 @@ namespace onlineshop.Repositroy
         Task<ResponseVM> GetTempBasket(Guid  tempbasket);
         Task<ResponseVM> ProductDetail(Guid productId);
         Task<ResponseVM> GetOrderByUserId(string userId);
+        Task<ResponseVM> GetAllOrderByUserId(string userId);
         Task<ResponseVM> GetOrder(string orderId);
         void AddPayment(T_Payment payment);
         void UpdateOrder(T_Order order);

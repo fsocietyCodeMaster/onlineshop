@@ -211,6 +211,28 @@ namespace onlineshop.Controllers
             return View(finalOrder);
             #endregion
         }
+        [HttpGet]
+        public async Task<IActionResult> ShowAllOrders()
+        {
+            #region user-order
+
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+            var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var order = await _onlineShop.GetAllOrderByUserId(user);
+            var orderConverted = order.Data as List<T_Order>;
+            if (orderConverted == null)
+            {
+                return NotFound();
+            }
+            #endregion
+            return View(orderConverted);
+        }
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> DeleteItems(Guid tempBasket)
