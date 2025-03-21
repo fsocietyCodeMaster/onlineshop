@@ -3,52 +3,12 @@
     ViewData["Title"] = "ShowBasket";
 }
 
-<h3>User:    @User.Identity.Name    Basket. </h3>
 
 @if (Model != null && Model.Any())
 {
-    @* <table class="table"> *@
-    @*     <thead> *@
-    @*         <tr> *@
-    @*             <th>Name</th> *@
-    @*             <th>Quantity</th> *@
-    @*             <th>TotalPrice</th> *@
-    @*             <th>Photos</th> *@
-    @*         </tr> *@
-    @*     </thead> *@
-    @*     <tbody> *@
-    @*         @foreach (var product in Model) *@
-    @*         { *@
-    @*             <tr> *@
-    @*                 <td>@product.Product.Name</td> *@
-    @*                 <td>@product.Quantity</td> *@
-    @*                 <td>@product.TotalPrice.ToString("N0")</td> *@
-    @*                 @foreach (var photo in product.Product.Photos) *@
-    @*                 { *@
-    @*                     <td><img class="border-radius" src="/@photo.ImageUrl" style="width:200px;height:200px"></td> *@
-    @*                 } *@
-    @*                 <td> *@
-    @*                     <form method="post" asp-action="DeleteItems"> *@
-    @*                         <input hidden name="tempBasket" value="@product.ID_TempBasket" /> *@
-    @*                         <button type="submit" class="btn btn-danger">Delete</button> *@
-    @*                     </form> *@
-    @*                 </td> *@
-    @*                 <td> *@
-    @*                     <form method="post" asp-action="EditItems"> *@
-    @*                         <input hidden name="tempBasket" value="@product.ID_TempBasket" /> *@
-    @*                         @Html.TextBox("quantity", product.Quantity, new { @type = "number", @min = "1" }) *@
-    @*                         <button type="submit" class="btn btn-danger">Edit</button> *@
-    @*                     </form> *@
-    @*                 </td> *@
-
-    @*             </tr> *@
-    @*         } *@
-    @*     </tbody> *@
-    @* </table> *@
-
     @foreach (var item in Model)
     {
-        <div class="card ">
+        <div class="card">
             <div class="card-header">
                 @User.Identity.Name Basket
             </div>
@@ -60,18 +20,23 @@
                 <h3 class="card-title">@item.Product.Name</h3>
                 <p class="card-text">@item.Quantity</p>
                 <p class="card-text">@item.TotalPrice.ToString("N0")</p>
-                <form method="post" asp-action="EditItems">
-                    <input hidden name="tempBasket" value="@item.ID_TempBasket" />
-                    <div class="form-group mb-2">
-                        @Html.TextBox("quantity", item.Quantity, new { @type = "number", @min = "1" })
-                    </div>
-                    <button type="submit" class="btn btn-danger">Edit</button>
+                <div class="d-flex align-items-end">
+                    <form method="post" asp-action="EditItems" class="d-flex align-items-end">
+                        <input hidden name="tempBasket" value="@item.ID_TempBasket" />
+                        <div class="form-group mb-2 me-2">
+                            @Html.TextBox("quantity", item.Quantity, new { @type = "number", @min = "1" })
+                        </div>
+                        <button type="submit" class="btn btn-danger me-2">Edit</button>
 
-                </form>
-                <form method="post" asp-action="DeleteItems">
-                    <input hidden name="tempBasket" value="@item.ID_TempBasket" />
-                    <button type="submit" class="btn btn-danger mt-2">Delete</button>
-                </form>
+                    </form>
+
+                    <form method="post" asp-action="DeleteItems">
+                        <input hidden name="tempBasket" value="@item.ID_TempBasket" />
+                        <button type="submit" class="btn btn-danger mt-2">Delete</button>
+                    </form>
+                </div>
+
+
             </div>
         </div>
     }

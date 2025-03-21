@@ -23,12 +23,11 @@ namespace onlineshop.Services
                 var tempBasketItem1 = new T_TempBasket
                 {
                     Product = product,
+                    T_Product_ID = product.ID_Product,
                     Quantity = quantity,
                     TotalPrice = discountPrice * quantity,
                     T_tempOrder_ID = tempOrder.ID_TempOrder
                 };
-                _context.Add(tempBasketItem1);
-                await _context.SaveChangesAsync();
                 return new ResponseVM
                 {
                     IsSuccess = true,
@@ -41,12 +40,11 @@ namespace onlineshop.Services
                 var tempBasketItem2 = new T_TempBasket
                 {
                     Product = product,
+                    T_Product_ID = product.ID_Product,
                     Quantity = quantity,
                     TotalPrice = quantity * product.Price,
                     T_tempOrder_ID = tempOrder.ID_TempOrder
                 };
-                _context.Add(tempBasketItem2);
-                await _context.SaveChangesAsync();
                 return new ResponseVM
                 {
                     IsSuccess = true,
@@ -56,21 +54,31 @@ namespace onlineshop.Services
             }
         }
 
-        public void UpdateTempBasket(T_TempBasket tempBasket, T_Product product, int quantity)
+        public ResponseVM UpdateTempBasket(T_TempBasket tempBasket, T_Product product, int quantity)
         {
+            var tempList = new List<T_TempBasket>();
             int quantityDifference = quantity - tempBasket.Quantity;
             if (quantityDifference != 0)
             {
                 var pricePerUnit = product.IsDiscountActive && product.Discount.HasValue ? DiscountExtention.GetDiscount(product) : product.Price;
                 tempBasket.Quantity = quantity;
                 tempBasket.TotalPrice = tempBasket.Quantity * pricePerUnit;
-                _context.Update(tempBasket);
-                _context.SaveChanges();
+                tempList.Add(tempBasket);
+                var success = new ResponseVM
+                {
+                    Data = tempList
+                };
+                return success;
             }
             else
             {
-                return;
+                var error = new ResponseVM
+                {
+                    IsSuccess = false
+                };
+                return error;
             }
+
 
         }
 
@@ -81,8 +89,8 @@ namespace onlineshop.Services
                 T_User_ID = id,
                 CreatedAt = DateTime.Now,
             };
-            _context.Add(order);
-            await _context.SaveChangesAsync();
+            //_context.Add(order);
+            //await _context.SaveChangesAsync();
             return new ResponseVM
             {
                 IsSuccess = true,
@@ -113,30 +121,6 @@ namespace onlineshop.Services
             }
         }
 
-        public async Task<ResponseVM> GetTempOrderByUser(string id)
-        {
-            var order = await _context.T_TempOrder.FirstOrDefaultAsync(c => c.T_User_ID == id);
-            if (order != null)
-            {
-                var success = new ResponseVM
-                {
-                    IsSuccess = true,
-                    Data = order
-                };
-                return success;
-            }
-            else
-            {
-
-                var error = new ResponseVM
-                {
-                    IsSuccess = false,
-                    Message = "There is no order."
-                };
-                return error;
-            }
-        }
-
         public async Task<ResponseVM> GetProductById(Guid id)
         {
             var product = await _context.T_Product.FirstOrDefaultAsync(c => c.ID_Product == id);
@@ -159,53 +143,6 @@ namespace onlineshop.Services
                 return error;
             }
         }
-
-        public async Task<ResponseVM> GetTempOrderById(Guid tempOrderId, Guid productId)
-        {
-            var tempOrder = await _context.T_TempBasket.Include(c => c.Product).ThenInclude(c => c.Photos).FirstOrDefaultAsync(c => c.T_tempOrder_ID == tempOrderId && c.T_Product_ID == productId);
-            if (tempOrder != null)
-            {
-                var success = new ResponseVM
-                {
-                    IsSuccess = true,
-                    Data = tempOrder
-                };
-                return success;
-            }
-            else
-            {
-                var error = new ResponseVM
-                {
-                    IsSuccess = false,
-                    Message = "There is no temporder."
-                };
-                return error;
-            }
-        }
-
-        public async Task<ResponseVM> GetTempBasketByOrderId(Guid id)
-        {
-            var tempBasket = await _context.T_TempBasket.Include(c => c.Product).ThenInclude(c => c.Photos).Where(c => c.T_tempOrder_ID == id).ToListAsync();
-            if (tempBasket != null && tempBasket.Any())
-            {
-                var success = new ResponseVM
-                {
-                    IsSuccess = true,
-                    Data = tempBasket
-                };
-                return success;
-            }
-            else
-            {
-                var error = new ResponseVM
-                {
-                    IsSuccess = false,
-                    Message = "There is no tempbasket."
-                };
-                return error;
-            }
-        }
-
         public void DeleteTempBasket(T_TempBasket basket)
         {
             _context.Remove(basket);
@@ -241,9 +178,14 @@ namespace onlineshop.Services
         {
             foreach (var item in tempBasket)
             {
+                var existingProduct = await _context.T_Product.FindAsync(item.T_Product_ID); // when using session other entity is not tracked so we need to get from db first.
+                if (existingProduct == null)
+                {
+                    throw new Exception("Product not found in database!");
+                }
                 var orderDetail = new T_Basket
                 {
-                    Product = item.Product,
+                    Product = existingProduct,
                     Quantity = item.Quantity,
                     T_Order_ID = orderId,
                     TotalPrice = item.TotalPrice,
@@ -285,29 +227,6 @@ namespace onlineshop.Services
                 {
                     IsSuccess = true,
                     Data = baskets
-                };
-                return success;
-            }
-            else
-            {
-                var error = new ResponseVM
-                {
-                    IsSuccess = false,
-                    Message = "There is no basket."
-                };
-                return error;
-            }
-        }
-
-        public async Task<ResponseVM> GetTempBasket(Guid tempbasket)
-        {
-            var tempBasket = await _context.T_TempBasket.Include(c => c.Product).FirstOrDefaultAsync(c => c.ID_TempBasket == tempbasket);
-            if (tempBasket != null)
-            {
-                var success = new ResponseVM
-                {
-                    IsSuccess = true,
-                    Data = tempBasket
                 };
                 return success;
             }

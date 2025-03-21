@@ -49,24 +49,31 @@ namespace onlineshop.Controllers
             }
             #endregion
             #region TempOrder
-            var tempOrder = await _onlineShop.GetTempOrderByUser(user);
-            var tempOrderConverted = tempOrder.Data as T_TempOrder;
-            if (tempOrderConverted == null)
+            var tempOrder = HttpContext.Session.GetObject<T_TempOrder>("tempOrder");
+            if (tempOrder == null)
             {
                 var result = await _onlineShop.CreateNewOrder(user);
-                tempOrderConverted = result.Data as T_TempOrder;
+                tempOrder = result.Data as T_TempOrder;
+                HttpContext.Session.SetObject("tempOrder", tempOrder);
             }
             #region TempBasket
-            var tempBasket = await _onlineShop.GetTempOrderById(tempOrderConverted.ID_TempOrder, productConvert.ID_Product);
-            var tempBasketConverted = tempBasket.Data as T_TempBasket;
-            if (tempBasketConverted == null || tempBasketConverted.T_Product_ID != productConvert.ID_Product)
+            var basketList = HttpContext.Session.GetObject<List<T_TempBasket>>("tempBasket") ?? new List<T_TempBasket>();
+            var existingItem = basketList.FirstOrDefault(c => c.T_Product_ID == productConvert.ID_Product);
+            if (existingItem == null)
             {
-                await _onlineShop.AddNewTempBasket(tempOrderConverted, productConvert, quantity);
+                var result = await _onlineShop.AddNewTempBasket(tempOrder, productConvert, quantity);
+                var newItem = result.Data as T_TempBasket;
+                basketList.Add(newItem);
             }
             else
             {
-                _onlineShop.UpdateTempBasket(tempBasketConverted, productConvert, quantity); // when time pass it goes here i need to check.
+              
+              var tempList =  _onlineShop.UpdateTempBasket(existingItem,existingItem.Product, quantity);
+                HttpContext.Session.SetObject("tempBasket", tempList.Data);
+
             }
+            HttpContext.Session.SetObject("tempBasket", basketList);
+
             #endregion
             #endregion
 
@@ -74,7 +81,7 @@ namespace onlineshop.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ShowBasket()
+        public  IActionResult ShowBasket()
         {
             #region show basket
             if (!User.Identity.IsAuthenticated)
@@ -82,39 +89,24 @@ namespace onlineshop.Controllers
                 return Unauthorized();
             }
             var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var tempOrder = await _onlineShop.GetTempOrderByUser(user);
-            var tempOrderConverted = tempOrder.Data as T_TempOrder;
-
-            if (tempOrderConverted == null)
+            var tempOrderSession = HttpContext.Session.GetObject<T_TempOrder>("tempOrder");
+            if (tempOrderSession == null)
             {
                 return View();
             }
 
             var expirationTime = TimeSpan.FromMinutes(3);
             var currentTime = DateTime.Now;
-            var elapsed = currentTime - tempOrderConverted.CreatedAt;
+            var elapsed = currentTime - tempOrderSession.CreatedAt;
+            var tempBasketSession = HttpContext.Session.GetObject<List<T_TempBasket>>("tempBasket");
             if (elapsed >= expirationTime)
             {
-                var tempBasket = await _onlineShop.GetTempBasketByOrderId(tempOrderConverted.ID_TempOrder);
-                var tempBasketConverted = tempBasket.Data as List<T_TempBasket>;
-                if (tempBasketConverted != null && tempBasketConverted.Any())
-                {
-                    foreach (var item in tempBasketConverted)
-                    {
-                        _onlineShop.DeleteTempBasket(item);
-                    }
-                    _onlineShop.Savechanges();
-
-                }
-                _onlineShop.DeleteTempOrder(tempOrderConverted);
-                _onlineShop.Savechanges();
-
-                return NotFound();
+                HttpContext.Session.Remove("tempBasket");
+                HttpContext.Session.Remove("tempOrder");
+                return RedirectToAction("ShowBasket");
 
             }
-            var basket = await _onlineShop.GetTempBasketByOrderId(tempOrderConverted.ID_TempOrder);
-            var basketConverted = basket.Data as List<T_TempBasket>;
-            return View(basketConverted);
+            return View(tempBasketSession);
             #endregion
 
         }
@@ -130,13 +122,12 @@ namespace onlineshop.Controllers
         {
             #region user-order-basket
             var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var tempOrder = await _onlineShop.GetTempOrderByUser(user);
-            var tempOrderConverted = tempOrder.Data as T_TempOrder;
-            var tempBasket = await _onlineShop.GetTempBasketByOrderId(tempOrderConverted.ID_TempOrder);
-            var tempBasketConverted = tempBasket.Data as List<T_TempBasket>;
+            var tempOrder = HttpContext.Session.GetObject<T_TempOrder>("tempOrder");
+            var tempBasket = HttpContext.Session.GetObject<List<T_TempBasket>>("tempBasket");
+            var tempBasketFiltered = tempBasket.Where(c => c.T_tempOrder_ID == tempOrder.ID_TempOrder).ToList();
             #endregion
             #region checking items
-            if (tempBasketConverted == null)
+            if (tempBasketFiltered == null)
             {
                 return NotFound();
             }
@@ -145,16 +136,11 @@ namespace onlineshop.Controllers
             var order = await _onlineShop.AddOrder(model, user);
             #endregion
             #region creating basket
-            await _onlineShop.AddBasket(tempBasketConverted, order);
+            await _onlineShop.AddBasket(tempBasketFiltered, order);
             #endregion
             #region delete basket
-            foreach (var item in tempBasketConverted)
-            {
-                _onlineShop.DeleteTempBasket(item);
-            }
-            await _onlineShop.saveChangesAsync();
-            _onlineShop.DeleteTempOrder(tempOrderConverted);
-            await _onlineShop.saveChangesAsync();
+            HttpContext.Session.Remove("tempBasket");
+            HttpContext.Session.Remove("tempOrder");
             #endregion
             return RedirectToAction("Showorder"); // can goes to showorder
         }
@@ -235,34 +221,37 @@ namespace onlineshop.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> DeleteItems(Guid tempBasket)
+        public  IActionResult DeleteItems(Guid tempBasket)
         {
             #region delete items 
-            var basketItems = await _onlineShop.GetTempBasket(tempBasket);
-            var basketItemsConverted = basketItems.Data as T_TempBasket;
-            if (basketItemsConverted == null)
+
+            var tempBasketSession = HttpContext.Session.GetObject<List<T_TempBasket>>("tempBasket").FirstOrDefault(c=> c.ID_TempBasket == tempBasket);
+            if (!User.Identity.IsAuthenticated)
             {
-                return NotFound();
+                return Unauthorized();
             }
-            _onlineShop.DeleteTempBasket(basketItemsConverted);
-            _onlineShop.Savechanges();
+            var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (tempBasketSession == null)
+            {
+                return RedirectToAction("ShowBasket");
+            }
+            HttpContext.Session.Remove("tempBasket");
             return RedirectToAction("ShowBasket");
             #endregion
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditItems(Guid tempBasket, int quantity)
+        public  IActionResult EditItems(Guid tempBasket, int quantity)
         {
             #region edit item
-            var basketItems = await _onlineShop.GetTempBasket(tempBasket);
-            var basketItemsConverted = basketItems.Data as T_TempBasket;
-            if (basketItemsConverted == null)
+            var tempBasketSession = HttpContext.Session.GetObject<List<T_TempBasket>>("tempBasket");
+            var existingItem = tempBasketSession.FirstOrDefault(c => c.ID_TempBasket == tempBasket);
+            if (existingItem == null)
             {
                 return NotFound();
             }
-            var product = basketItemsConverted.Product;
-            _onlineShop.UpdateTempBasket(basketItemsConverted, product, quantity);
-            _onlineShop.Savechanges();
+            var tempList = _onlineShop.UpdateTempBasket(existingItem, existingItem.Product, quantity);
+            HttpContext.Session.SetObject("tempBasket", tempList.Data);
             return RedirectToAction("ShowBasket");
             #endregion
         }
@@ -412,7 +401,7 @@ namespace onlineshop.Controllers
                     Console.WriteLine($"Verification failed with status code: {response.StatusCode}");
                     return BadRequest("Payment verification failed.");
                 }
-              
+
             }
             return NotFound();
             #endregion

@@ -20,7 +20,8 @@
     <h3>Order Items</h3>
     @if (Model.BasketDetails != null && Model.BasketDetails.Any())
     {
-        <table class="table">
+        <div class="table-responsive">
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Product Name</th>
@@ -61,6 +62,7 @@
 
             </tbody>
         </table>
+        </div>
     }
     else
     {

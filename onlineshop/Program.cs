@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using onlineshop.Context;
 using onlineshop.Helper;
 using onlineshop.Models;
-using static System.Formats.Asn1.AsnWriter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +21,12 @@ builder.Services.ConfigureApplicationCookie(option =>
 });
 builder.Services.AddCustomService();
 builder.Services.AddHttpClient();
+builder.Services.AddSession(option=>
+{
+    option.IdleTimeout = TimeSpan.FromMinutes(5);
+    option.Cookie.HttpOnly = true;
+    option.Cookie.IsEssential = true;
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -45,7 +50,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(

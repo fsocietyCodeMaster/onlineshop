@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace onlineshop.Models
@@ -33,6 +34,7 @@ namespace onlineshop.Models
 
         public Guid T_Category_ID { get; set; }
         [ForeignKey("T_Category_ID")]
+        [JsonIgnore]
         public T_L_Category Category { get; set; }
 
         public ICollection<T_L_ProductPhoto> Photos { get; set; } = new List<T_L_ProductPhoto>();

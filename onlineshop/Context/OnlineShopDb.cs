@@ -15,8 +15,6 @@ namespace onlineshop.Context
         public DbSet<T_L_Category> T_L_Category { get; set; }
         public DbSet<T_Basket> T_Basket { get; set; }
         public DbSet<T_Order> T_Order { get; set; }
-        public DbSet<T_TempBasket> T_TempBasket { get; set; }
-        public DbSet<T_TempOrder> T_TempOrder { get; set; }
         public DbSet<T_Payment> T_Payment { get; set; }
 
     }
