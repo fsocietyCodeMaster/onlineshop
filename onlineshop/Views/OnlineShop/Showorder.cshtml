@@ -7,6 +7,10 @@
 
 <h2>Order Details</h2>
 
+@if(Model != null)
+{
+
+
 <div>
     <h3>Customer Information</h3>
     <p><strong>Name:</strong> @Model.Name</p>
@@ -18,9 +22,7 @@
 
 <div>
     <h3>Order Items</h3>
-    @if (Model.BasketDetails != null && Model.BasketDetails.Any())
-    {
-        <div class="table-responsive">
+    <div class="table-responsive">
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -62,15 +64,16 @@
 
             </tbody>
         </table>
-        </div>
-    }
-    else
-    {
-        <p>No items found for this order.</p>
-    }
+    </div>
+
 </div>
 
 <form method="post" asp-action="Payment" asp-controller="OnlineShop" onsubmit="disableButton(this)">
 
-    <button type="submit" class="btn btn-primary" >Do the Payment now!</button>
+    <button type="submit" class="btn btn-primary">Do the Payment now!</button>
 </form>
+}
+else
+{
+    <p>No items found for this order.</p>
+}

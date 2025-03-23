@@ -324,5 +324,29 @@ namespace onlineshop.Services
                 return error;
             }
         }
+        public async Task<ResponseVM> SearchProduct(string filter)
+        {
+            var filterProduct = await _context.T_Product.Where(c => c.Name.Contains(filter)).Include(c=> c.Photos).Distinct().ToListAsync();
+            if (filterProduct.Any())
+            {
+
+                var success = new ResponseVM
+                {
+                    IsSuccess = true,
+                    Data = filterProduct
+                };
+                return success;
+            }
+            else
+            {
+                var error = new ResponseVM
+                {
+                    Message = "There is no product.",
+                    IsSuccess = false
+                };
+                return error;
+            }
+        }
+
     }
 }

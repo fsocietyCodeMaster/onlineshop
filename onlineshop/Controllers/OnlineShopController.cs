@@ -67,8 +67,8 @@ namespace onlineshop.Controllers
             }
             else
             {
-              
-              var tempList =  _onlineShop.UpdateTempBasket(existingItem,existingItem.Product, quantity);
+
+                var tempList = _onlineShop.UpdateTempBasket(existingItem, existingItem.Product, quantity);
                 HttpContext.Session.SetObject("tempBasket", tempList.Data);
 
             }
@@ -81,7 +81,7 @@ namespace onlineshop.Controllers
         }
 
         [HttpGet]
-        public  IActionResult ShowBasket()
+        public IActionResult ShowBasket()
         {
             #region show basket
             if (!User.Identity.IsAuthenticated)
@@ -159,7 +159,7 @@ namespace onlineshop.Controllers
             var orderConverted = order.Data as T_Order;
             if (orderConverted == null)
             {
-                return NotFound();
+                return View();
             }
             #endregion
             #region mapping basket
@@ -221,11 +221,11 @@ namespace onlineshop.Controllers
 
 
         [HttpPost]
-        public  IActionResult DeleteItems(Guid tempBasket)
+        public IActionResult DeleteItems(Guid tempBasket)
         {
             #region delete items 
 
-            var tempBasketSession = HttpContext.Session.GetObject<List<T_TempBasket>>("tempBasket").FirstOrDefault(c=> c.ID_TempBasket == tempBasket);
+            var tempBasketSession = HttpContext.Session.GetObject<List<T_TempBasket>>("tempBasket");
             if (!User.Identity.IsAuthenticated)
             {
                 return Unauthorized();
@@ -235,13 +235,17 @@ namespace onlineshop.Controllers
             {
                 return RedirectToAction("ShowBasket");
             }
-            HttpContext.Session.Remove("tempBasket");
+
+            var itemToRemove = tempBasketSession.FirstOrDefault(c => c.ID_TempBasket == tempBasket);
+            tempBasketSession.Remove(itemToRemove);
+            HttpContext.Session.SetObject("tempBasket", tempBasketSession);
+
             return RedirectToAction("ShowBasket");
             #endregion
         }
 
         [HttpPost]
-        public  IActionResult EditItems(Guid tempBasket, int quantity)
+        public IActionResult EditItems(Guid tempBasket, int quantity)
         {
             #region edit item
             var tempBasketSession = HttpContext.Session.GetObject<List<T_TempBasket>>("tempBasket");
@@ -406,5 +410,17 @@ namespace onlineshop.Controllers
             return NotFound();
             #endregion
         }
+        #region SearchProduct
+        [HttpPost]
+        public async Task<IActionResult> SearchProduct(string filter)
+        {
+            var filterProduct = await _onlineShop.SearchProduct(filter);
+            if (filterProduct.IsSuccess)
+            {
+                return View(filterProduct.Data);
+            }
+            return NotFound(filterProduct.Message);
+        }
+        #endregion
     }
 }
