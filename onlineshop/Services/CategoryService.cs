@@ -16,13 +16,13 @@ namespace onlineshop.Services
             _context = context;
             _mapper = mapper;
         }
-        public async Task<ResponseVM> CreateCategory(Create_CategoryVM model)
+        public async Task<CategoryResultVM> CreateCategory(Create_CategoryVM model)
         {
             if (model != null)
             {
                 bool exists = await _context.T_L_Category.AnyAsync(c => c.Name == model.Name);
                 if (exists)
-                    return new ResponseVM
+                    return new CategoryResultVM
                     {
                         Message = "Category already exists.",
                         IsSuccess = false
@@ -31,7 +31,7 @@ namespace onlineshop.Services
                 var category = _mapper.Map<T_L_Category>(model);
                 _context.Add(category);
                 await _context.SaveChangesAsync();
-                var success = new ResponseVM
+                var success = new CategoryResultVM
                 {
                     Message = "index",
                     IsSuccess = true
@@ -40,7 +40,7 @@ namespace onlineshop.Services
             }
             else
             {
-                var error = new ResponseVM
+                var error = new CategoryResultVM
                 {
                     Message = "There is problem sending data.", // i didnt check errors.
                     IsSuccess = false
@@ -49,14 +49,14 @@ namespace onlineshop.Services
             }
         }
 
-        public async Task<ResponseVM> DeleteCategory(Guid id)
+        public async Task<CategoryResultVM> DeleteCategory(Guid id)
         {
             var category = await _context.T_L_Category.FindAsync(id);
             if (category != null)
             {
                 _context.Remove(category);
                 await _context.SaveChangesAsync();
-                var success = new ResponseVM
+                var success = new CategoryResultVM
                 {
                     Message = "index",
                     IsSuccess = true
@@ -65,7 +65,7 @@ namespace onlineshop.Services
             }
             else
             {
-                var error = new ResponseVM
+                var error = new CategoryResultVM
                 {
                     Message = "There is no category.",
                     IsSuccess = false
@@ -74,21 +74,21 @@ namespace onlineshop.Services
             }
         }
 
-        public async Task<ResponseVM> GetAllCategory()
+        public async Task<CategoryResultVM> GetAllCategory()
         {
             var categories = await _context.T_L_Category.ToListAsync();
             if (categories.Any())
             {
-                var success = new ResponseVM
+                var success = new CategoryResultVM
                 {
                     IsSuccess = true,
-                    Data = categories
+                    Categories = categories
                 };
                 return success;
             }
             else
             {
-                var error = new ResponseVM
+                var error = new CategoryResultVM
                 {
                     Message = "There is no category.",
                     IsSuccess = false
@@ -105,14 +105,14 @@ namespace onlineshop.Services
 
         }
 
-        public async Task<ResponseVM> UpdateCategory(Update_CategoryVM model)
+        public async Task<CategoryResultVM> UpdateCategory(Update_CategoryVM model)
         {
             var category = await _context.T_L_Category.FindAsync(model.ID_Category);
             if (category != null)
             {
                 var newCategory = _mapper.Map(model, category);
                 await _context.SaveChangesAsync();
-                var success = new ResponseVM
+                var success = new CategoryResultVM
                 {
                     Message = "index",
                     IsSuccess = true
@@ -121,7 +121,7 @@ namespace onlineshop.Services
             }
             else
             {
-                var error = new ResponseVM
+                var error = new CategoryResultVM
                 {
                     Message = "No category found.",
                     IsSuccess = false

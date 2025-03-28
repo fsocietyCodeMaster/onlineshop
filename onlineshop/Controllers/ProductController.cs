@@ -20,15 +20,15 @@ namespace onlineshop.Controllers
         public async Task<IActionResult> Index()
         {
             var products = await _product.GetAllProducts();
-            return View(products.Data);
+            return View(products.Products);
         }
 
         [HttpGet]
         public async Task<IActionResult> Create()
         {
             var categories = await _category.GetAllCategory();
-            var result = categories.Data as List<T_L_Category>;
-            ViewBag.Categories = new SelectList(categories.Data as List<T_L_Category>, "ID_Category", "Name");
+            var result = categories.Categories;
+            ViewBag.Categories = new SelectList(result, "ID_Category", "Name");
             return View();
         }
 
@@ -37,7 +37,8 @@ namespace onlineshop.Controllers
         {
 
             var categories = await _category.GetAllCategory();
-            ViewBag.Categories = new SelectList(categories.Data as List<T_L_Category>, "ID_Category", "Name");
+            var finalResult = categories.Categories;
+            ViewBag.Categories = new SelectList(finalResult, "ID_Category", "Name");
             if (ModelState.IsValid)
                 {
                 var result = await _product.CreateProduct(model);
@@ -57,7 +58,7 @@ namespace onlineshop.Controllers
         public async Task<IActionResult> Update(Guid id)
         {
             var product = await _product.GetProductById(id);
-           var result = product.Data as T_Product;
+            var result = product.Product;
             if (product != null)
             {
                 var newProduct = new Update_ProductVM
@@ -73,7 +74,8 @@ namespace onlineshop.Controllers
                     
                 };
                 var categories = await _category.GetAllCategory();
-                ViewBag.Categories = new SelectList(categories.Data as List<T_L_Category>, "ID_Category", "Name");
+                var finalResult = categories.Categories;
+                ViewBag.Categories = new SelectList(finalResult, "ID_Category", "Name");
                 return View(newProduct);
             }
             return NotFound(product.Message);
@@ -89,7 +91,8 @@ namespace onlineshop.Controllers
                 if(result.IsSuccess)
                 {
                     var categories = await _category.GetAllCategory();
-                    ViewBag.Categories = new SelectList(categories.Data as List<T_L_Category>, "ID_Category", "Name");
+                    var finalResult = categories.Categories;
+                    ViewBag.Categories = new SelectList(finalResult, "ID_Category", "Name");
                     return RedirectToAction(result.Message);
                 }
                 else

@@ -20,7 +20,7 @@ namespace onlineshop.Controllers
         public async Task<IActionResult> Index(int? page)
         {
             int pageNumber = page ?? 1;
-            int pageSize = 10;
+            int pageSize = 9;
             var products = await _onlineShop.GetAllProducts(pageNumber, pageSize);
             return View((products.Data as IPagedList<T_Product>));
         }

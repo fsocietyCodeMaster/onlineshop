@@ -37,7 +37,7 @@ namespace onlineshop.Controllers
             var product = await _product.GetProductById(id);
             #endregion
             #region condition
-            var productConvert = product.Data as T_Product;
+            var productConvert = product.Product;
             if (product == null || !productConvert.IsAvailable || productConvert.Quantity == 0)
             {
                 return View("ProductNotFound");

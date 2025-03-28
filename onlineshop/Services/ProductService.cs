@@ -17,13 +17,13 @@ namespace onlineshop.Services
             _context = context;
             _mapper = mapper;
         }
-        public async Task<ResponseVM> CreateProduct(Create_ProductVM model)
+        public async Task<ProductResultVM> CreateProduct(Create_ProductVM model)
         {
             if (model != null)
             {
                 if (model.ImageUrl == null || !model.ImageUrl.Any())
                 {
-                    var error = new ResponseVM
+                    var error = new ProductResultVM
                     {
                         Message = "No file uploaded.",
                         IsSuccess = false
@@ -45,7 +45,7 @@ namespace onlineshop.Services
                     var fileExtension = Path.GetExtension(file.FileName);
                     if (!allowedExtensions.Contains(fileExtension))
                     {
-                        var error = new ResponseVM
+                        var error = new ProductResultVM
                         {
                             Message = $"Invalid file format: {file.FileName}. Allowed formats: {string.Join(", ", allowedExtensions)}",
                             IsSuccess = false
@@ -68,7 +68,7 @@ namespace onlineshop.Services
 
                 _context.AddRange(imageList); // this is the best way of adding list in db.
                 await _context.SaveChangesAsync();
-                var success = new ResponseVM
+                var success = new ProductResultVM
                 {
                     Message = "index",
                     IsSuccess = true
@@ -79,7 +79,7 @@ namespace onlineshop.Services
             }
             else
             {
-                var error = new ResponseVM
+                var error = new ProductResultVM
                 {
                     Message = "There is problem sending the data.",
                     IsSuccess = false
@@ -88,13 +88,13 @@ namespace onlineshop.Services
             }
         }
 
-        public async Task<ResponseVM> DeleteProduct(Guid id)
+        public async Task<ProductResultVM> DeleteProduct(Guid id)
         {
             var product = await GetProductById(id);
             if (product != null)
             {
-                var images = product.Data as T_Product;
-                foreach (var photos in images.Photos)
+                var finalResult = product.Product;
+                foreach (var photos in finalResult.Photos)
                 {
                     var path = (Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", photos.ImageUrl)); // maybe path doesnt exist 
                     File.Delete(path);
@@ -102,9 +102,9 @@ namespace onlineshop.Services
 
 
                 }
-                _context.Remove(images);
+                _context.Remove(finalResult);
                 await _context.SaveChangesAsync();
-                var success = new ResponseVM
+                var success = new ProductResultVM
                 {
                     Message = "index",
                     IsSuccess = true
@@ -113,7 +113,7 @@ namespace onlineshop.Services
             }
             else
             {
-                var error = new ResponseVM
+                var error = new ProductResultVM
                 {
                     Message = "There is no product.",
                     IsSuccess = false
@@ -122,21 +122,21 @@ namespace onlineshop.Services
             }
         }
 
-        public async Task<ResponseVM> GetAllProducts()
+        public async Task<ProductResultVM> GetAllProducts()
         {
             var products = await _context.T_Product.Include(c => c.Category).Include(c => c.Photos).ToListAsync();
             if (products.Any())
             {
-                var success = new ResponseVM
+                var success = new ProductResultVM
                 {
                     IsSuccess = true,
-                    Data = products
+                    Products = products
                 };
                 return success;
             }
             else
             {
-                var error = new ResponseVM
+                var error = new ProductResultVM
                 {
                     Message = "There is no product.",
                     IsSuccess = false
@@ -145,21 +145,21 @@ namespace onlineshop.Services
             }
         }
 
-        public async Task<ResponseVM> GetProductById(Guid id)
+        public async Task<ProductResultVM> GetProductById(Guid id)
         {
             var product = await _context.T_Product.Include(c => c.Category).Include(c => c.Photos).FirstOrDefaultAsync(c => c.ID_Product == id);
             if (product != null)
             {
-                var success = new ResponseVM
+                var success = new ProductResultVM
                 {
                     IsSuccess = true,
-                    Data = product
+                    Product = product
                 };
                 return success;
             }
             else
             {
-                var error = new ResponseVM
+                var error = new ProductResultVM
                 {
                     Message = "There is no product.",
                     IsSuccess = false
@@ -169,7 +169,7 @@ namespace onlineshop.Services
 
         }
 
-        public async Task<ResponseVM> UpdateProduct(Guid id, Update_ProductVM model)
+        public async Task<ProductResultVM> UpdateProduct(Guid id, Update_ProductVM model)
         {
             var product = await _context.T_Product.Include(c => c.Category).Include(c => c.Photos).FirstOrDefaultAsync(c => c.ID_Product == id);
             if (product != null)
@@ -211,7 +211,7 @@ namespace onlineshop.Services
                 }
                 _context.T_L_ProductPhoto.AddRange(imageList);
                 await _context.SaveChangesAsync();
-                var success = new ResponseVM
+                var success = new ProductResultVM
                 {
                     Message = "index",
                     IsSuccess = true
@@ -220,7 +220,7 @@ namespace onlineshop.Services
             }
             else
             {
-                var error = new ResponseVM
+                var error = new ProductResultVM
                 {
                     Message = "No product found.",
                     IsSuccess = false

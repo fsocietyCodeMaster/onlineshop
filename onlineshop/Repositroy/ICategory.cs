@@ -4,10 +4,10 @@ namespace onlineshop.Repositroy
 {
     public interface ICategory
     {
-        Task<ResponseVM> CreateCategory(Create_CategoryVM model);
-        Task<ResponseVM> UpdateCategory(Update_CategoryVM model);
+        Task<CategoryResultVM> CreateCategory(Create_CategoryVM model);
+        Task<CategoryResultVM> UpdateCategory(Update_CategoryVM model);
         Task<Update_CategoryVM> GetCategoryById(Guid? id);
-        Task<ResponseVM> GetAllCategory();
-        Task<ResponseVM> DeleteCategory(Guid id);
+        Task<CategoryResultVM> GetAllCategory();
+        Task<CategoryResultVM> DeleteCategory(Guid id);
     }
 }

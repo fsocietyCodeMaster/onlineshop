@@ -4,11 +4,11 @@ namespace onlineshop.Repositroy
 {
     public interface IProduct
     {
-        Task<ResponseVM> CreateProduct(Create_ProductVM model);
-        Task<ResponseVM> GetAllProducts();
-        Task<ResponseVM> UpdateProduct(Guid id, Update_ProductVM model);
-        Task<ResponseVM> GetProductById(Guid id);
-        Task<ResponseVM> DeleteProduct(Guid id);
+        Task<ProductResultVM> CreateProduct(Create_ProductVM model);
+        Task<ProductResultVM> GetAllProducts();
+        Task<ProductResultVM> UpdateProduct(Guid id, Update_ProductVM model);
+        Task<ProductResultVM> GetProductById(Guid id);
+        Task<ProductResultVM> DeleteProduct(Guid id);
 
     }
 }

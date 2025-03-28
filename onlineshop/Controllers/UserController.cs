@@ -149,5 +149,11 @@ namespace onlineshop.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        public IActionResult Dashboard()
+        {
+            return View();
+        }
     }
 }

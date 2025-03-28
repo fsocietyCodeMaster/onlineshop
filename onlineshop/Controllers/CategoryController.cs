@@ -19,7 +19,7 @@ namespace onlineshop.Controllers
             var result = await _category.GetAllCategory();
             if (result.IsSuccess)
             {
-                return View(result.Data);
+                return View(result.Categories);
             }
             else
             {
