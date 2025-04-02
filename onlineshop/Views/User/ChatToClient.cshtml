@@ -1,0 +1,24 @@
+﻿<link rel="stylesheet" href="~/css/Login.css">
+
+<div class="admin-container">
+    <aside class="sidebar">
+        <h3>Connected Clients</h3>
+        <ul id="clientList"></ul>
+    </aside>
+    <main class="chat-area">
+        <header>
+            <h2>Admin Support Chat</h2>
+        </header>
+        <ul id="messages" class="chat-box"></ul>
+        <div class="message-input">
+            <input type="hidden" id="selectedClient">
+            <input type="text" id="messageInput" placeholder="Type your message...">
+            <button onclick="sendMessageToClient()">Send</button>
+        </div>
+    </main>
+</div>
+
+
+
+<script src="/lib/microsoft-signalr/signalr.js"></script>
+<script src="/js/ChatAdmin.js"></script>

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using onlineshop.Context;
 
@@ -11,9 +12,11 @@ using onlineshop.Context;
 namespace onlineshop.Migrations
 {
     [DbContext(typeof(OnlineShopDb))]
-    partial class OnlineShopDbModelSnapshot : ModelSnapshot
+    [Migration("20250331174717_chatHistory")]
+    partial class chatHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -195,9 +198,6 @@ namespace onlineshop.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LastAssignedAdminId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -209,6 +209,29 @@ namespace onlineshop.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("T_ChatConnection");
+                });
+
+            modelBuilder.Entity("onlineshop.Models.T_ChatHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiverId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("T_ChatHistories");
                 });
 
             modelBuilder.Entity("onlineshop.Models.T_L_Category", b =>

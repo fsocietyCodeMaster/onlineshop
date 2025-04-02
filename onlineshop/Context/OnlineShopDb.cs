@@ -16,6 +16,7 @@ namespace onlineshop.Context
         public DbSet<T_Basket> T_Basket { get; set; }
         public DbSet<T_Order> T_Order { get; set; }
         public DbSet<T_Payment> T_Payment { get; set; }
+        public DbSet<T_ChatConnection> T_ChatConnection { get; set; }
 
     }
 }

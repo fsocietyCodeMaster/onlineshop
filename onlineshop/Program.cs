@@ -1,13 +1,16 @@
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using onlineshop.Context;
 using onlineshop.Helper;
 using onlineshop.Models;
+using onlineshop.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDbContext<OnlineShopDb>(option =>
 {
@@ -48,13 +51,17 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"Request: {context.Request.Path}");
+    await next.Invoke();
+});
 app.UseRouting();
 app.UseSession();
 app.UseAuthorization();
+app.MapHub<ChatHub>("/chatHub").RequireAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 app.Run();

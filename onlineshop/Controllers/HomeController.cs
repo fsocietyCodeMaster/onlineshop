@@ -8,12 +8,10 @@ namespace onlineshop.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private readonly IOnlineShop _onlineShop;
 
-        public HomeController(ILogger<HomeController> logger, IOnlineShop onlineShop)
+        public HomeController( IOnlineShop onlineShop)
         {
-            _logger = logger;
             _onlineShop = onlineShop;
         }
 
@@ -30,6 +28,9 @@ namespace onlineshop.Controllers
             return View();
         }
 
-       
+       public IActionResult OnlineSupport()
+        {
+            return View();
+        }
     }
 }

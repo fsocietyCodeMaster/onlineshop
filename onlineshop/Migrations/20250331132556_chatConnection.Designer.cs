@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using onlineshop.Context;
 
@@ -11,9 +12,11 @@ using onlineshop.Context;
 namespace onlineshop.Migrations
 {
     [DbContext(typeof(OnlineShopDb))]
-    partial class OnlineShopDbModelSnapshot : ModelSnapshot
+    [Migration("20250331132556_chatConnection")]
+    partial class chatConnection
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,14 +191,8 @@ namespace onlineshop.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AssignedAdminId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ConnectionId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastAssignedAdminId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
@@ -208,7 +205,7 @@ namespace onlineshop.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("T_ChatConnection");
+                    b.ToTable("T_ChateConnection");
                 });
 
             modelBuilder.Entity("onlineshop.Models.T_L_Category", b =>

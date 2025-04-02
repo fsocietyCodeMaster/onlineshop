@@ -43,25 +43,35 @@
                                 <a class="nav-link" href="/User/Dashboard">Dashboard</a>
                             </li>
 
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="ChatToClient">
+                                    <i class="bi bi-person-raised-hand"></i> OnlineSupport
+                                </a>
+                            </li>
                         }
                         else if (User.Identity.IsAuthenticated && User.IsInRole("User"))
                         {
 
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="OnlineShop" asp-action="ShowBasket">
-                                    <i class="bi bi-cart4"></i>
+                                    <i class="bi bi-cart4"></i> Basket
                                 </a>
                             </li>
 
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="OnlineShop" asp-action="ShowAllOrders">
-                                    <i class="bi bi-list-check"></i>
+                                    <i class="bi bi-list-check"></i> OrderHistory
                                 </a>
                             </li>
 
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="OnlineShop" asp-action="ShowOrder">
-                                    <i class="bi bi-cart-check"></i>
+                                    <i class="bi bi-cart-check"></i> Order
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="OnlineSupport">
+                                    <i class="bi bi-person-raised-hand"></i> OnlineSupport
                                 </a>
                             </li>
                         }
@@ -78,6 +88,8 @@
                                     <i class="bi bi-box-arrow-left"></i> Logout
                                 </a>
                             </li>
+     
+
                         }
                         else
                         {

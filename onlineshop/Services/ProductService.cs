@@ -47,7 +47,7 @@ namespace onlineshop.Services
                     {
                         var error = new ProductResultVM
                         {
-                            Message = $"Invalid file format: {file.FileName}. Allowed formats: {string.Join(", ", allowedExtensions)}",
+                            Message = $"Invalid file format: {Path.GetExtension(file.FileName)}. Allowed formats: {string.Join(", ", allowedExtensions)}",
                             IsSuccess = false
                         };
                         return error;

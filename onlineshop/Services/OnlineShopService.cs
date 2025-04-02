@@ -15,7 +15,7 @@ namespace onlineshop.Services
             _context = context;
         }
 
-        public async Task<ResponseVM> AddNewTempBasket(T_TempOrder tempOrder, T_Product product, int quantity)
+        public  ResponseVM AddNewTempBasket(T_TempOrder tempOrder, T_Product product, int quantity)
         {
             if (product.IsDiscountActive && product.Discount.HasValue)
             {
@@ -82,15 +82,13 @@ namespace onlineshop.Services
 
         }
 
-        public async Task<ResponseVM> CreateNewOrder(string id)
+        public  ResponseVM CreateNewOrder(string id)
         {
             var order = new T_TempOrder
             {
                 T_User_ID = id,
                 CreatedAt = DateTime.Now,
             };
-            //_context.Add(order);
-            //await _context.SaveChangesAsync();
             return new ResponseVM
             {
                 IsSuccess = true,

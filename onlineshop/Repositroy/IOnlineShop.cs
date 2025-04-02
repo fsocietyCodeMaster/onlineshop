@@ -6,8 +6,8 @@ namespace onlineshop.Repositroy
     {
         Task<ResponseVM> GetAllProducts(int page, int pageSize);
         Task<ResponseVM> GetProductById(Guid id);
-        Task<ResponseVM> CreateNewOrder(string id);
-        Task<ResponseVM> AddNewTempBasket(T_TempOrder tempOrder, T_Product product, int quantity);
+        ResponseVM CreateNewOrder(string id);
+        ResponseVM AddNewTempBasket(T_TempOrder tempOrder, T_Product product, int quantity);
         ResponseVM UpdateTempBasket(T_TempBasket tempBasket, T_Product product, int quantity);
         void DeleteTempBasket(T_TempBasket basket);
         void DeleteTempOrder(T_TempOrder tempOrder);

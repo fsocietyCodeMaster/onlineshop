@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using onlineshop.Models;
@@ -151,7 +152,15 @@ namespace onlineshop.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles ="admin")]
         public IActionResult Dashboard()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "admin")]
+        public IActionResult ChatToClient()
         {
             return View();
         }

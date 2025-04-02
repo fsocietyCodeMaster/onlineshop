@@ -1,0 +1,13 @@
+﻿<link rel="stylesheet" href="~/css/Login.css">
+<div class="chat-container">
+    <header>
+        <h2>Support Chat</h2>
+    </header>
+    <ul id="messages" class="chat-box"></ul>
+    <div class="message-input">
+        <input type="text" id="messageInput" placeholder="Type your message...">
+        <button onclick="sendMessageToAdmin()">Send</button>
+    </div>
+</div>
+<script src="/lib/microsoft-signalr/signalr.js"></script>
+<script src="/js/ChatClient.js"></script>

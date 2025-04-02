@@ -52,7 +52,7 @@ namespace onlineshop.Controllers
             var tempOrder = HttpContext.Session.GetObject<T_TempOrder>("tempOrder");
             if (tempOrder == null)
             {
-                var result = await _onlineShop.CreateNewOrder(user);
+                var result =  _onlineShop.CreateNewOrder(user);
                 tempOrder = result.Data as T_TempOrder;
                 HttpContext.Session.SetObject("tempOrder", tempOrder);
             }
@@ -61,7 +61,7 @@ namespace onlineshop.Controllers
             var existingItem = basketList.FirstOrDefault(c => c.T_Product_ID == productConvert.ID_Product);
             if (existingItem == null)
             {
-                var result = await _onlineShop.AddNewTempBasket(tempOrder, productConvert, quantity);
+                var result =  _onlineShop.AddNewTempBasket(tempOrder, productConvert, quantity);
                 var newItem = result.Data as T_TempBasket;
                 basketList.Add(newItem);
             }

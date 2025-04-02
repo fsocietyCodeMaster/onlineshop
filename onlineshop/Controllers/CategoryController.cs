@@ -38,14 +38,21 @@ namespace onlineshop.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _category.CreateCategory(model);
-                if (result.IsSuccess)
+                try
                 {
-                    return RedirectToAction(result.Message);
+                    var result = await _category.CreateCategory(model);
+                    if (result.IsSuccess)
+                    {
+                        return RedirectToAction(result.Message);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", result.Message);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    ModelState.AddModelError("", result.Message);
+                    Console.WriteLine($"The error is :{ex.Message}");
                 }
             }
             return View(model);
@@ -67,14 +74,21 @@ namespace onlineshop.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _category.UpdateCategory(model);
-                if (result.IsSuccess)
+                try
                 {
-                   return  RedirectToAction(result.Message);
+                    var result = await _category.UpdateCategory(model);
+                    if (result.IsSuccess)
+                    {
+                        return RedirectToAction(result.Message);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", result.Message);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    ModelState.AddModelError("", result.Message);
+                    Console.WriteLine(ex.Message);
                 }
             }
             return View(model);
@@ -84,13 +98,13 @@ namespace onlineshop.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
 
-                var result = await _category.DeleteCategory(id);
+            var result = await _category.DeleteCategory(id);
             if (result.IsSuccess)
             {
                 return RedirectToAction(result.Message);
             }
-            
+
             return BadRequest(result.Message);
         }
-    } 
+    }
 }
